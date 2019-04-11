@@ -80,11 +80,44 @@ copyex:
 	str	r1, [r0]
 # endif
 
+#if 0
 	/* FCLK:HCLK:PCLK = 1:2:4 */
 	/* default FCLK is 120 MHz ! */
 	ldr	r0, =CLKDIVN
 	mov	r1, #3
 	str	r1, [r0]
+#endif 
+
+    /* set FCLK HCLK PCLK 1:4:8 */
+    ldr r0, =CLKDIVN
+    mov r1, #5
+    str r1, [r0] 
+
+#define MPLLCON                 0x4C000004
+#define S3C2440_MPLL_400MHZ     ((0x5c<<12)|(0x01<<4)|(0x01))
+
+    /* set FCLK to 400MHZ */
+    ldr r0, =MPLLCON
+    ldr r1, =S3C2440_MPLL_400MHZ
+    str r1, [r0]
+
+    /* set to synchronous bus mode */
+    mrc p15,0,r0,c1,c0,0
+    orr r0,r0,#0xc0000000
+    mcr p15,0,r0,c1,c0,0
+
+
+/* set up leds */
+/*
+    ldr r0, =0x56000050
+    mov r1, #0x1500
+    str r1, [r0]
+
+    ldr r0, =0x56000054
+    mov r1, #0x20
+    str r1, [r0]
+*/    
+
 #endif	/* CONFIG_S3C24X0 */
 
 	/*
@@ -148,3 +181,4 @@ cpu_init_crit:
 #endif
 	mov	pc, lr
 #endif /* CONFIG_SKIP_LOWLEVEL_INIT */
+
