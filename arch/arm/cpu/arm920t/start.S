@@ -128,7 +128,23 @@ copyex:
 	bl	cpu_init_crit
 #endif
 
-	bl	_main
+    /* set up sp for nand init used */
+    ldr sp, =(CONFIG_SYS_INIT_SP_ADDR)
+    bic sp, sp, #7
+
+    bl nand_init_ll
+
+    ldr r0, =CONFIG_SYS_TEXT_BASE
+    mov r1, #0
+    ldr r2, =__image_copy_end
+    sub r2, r2, r0
+
+    bl copy_code_to_sdram
+
+    ldr pc, =run_in_sdram_f
+
+run_in_sdram_f:
+	bl	_main 
 
 /*------------------------------------------------------------------------------*/
 

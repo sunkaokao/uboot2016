@@ -44,6 +44,7 @@ SECTIONS
 		*(.__image_copy_start)
 		*(.vectors)
 		CPUDIR/start.o (.text*)
+        CONFIG_BOARDDIR/built-in.o (.text*)
 		*(.text*)
 	}
 

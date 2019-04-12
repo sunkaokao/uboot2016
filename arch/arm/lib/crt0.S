@@ -111,24 +111,7 @@ ENTRY(_main)
 	ldr	r9, [r9, #GD_BD]		/* r9 = gd->bd */
 	sub	r9, r9, #GD_SIZE		/* new GD is below bd */
 
-	adr	lr, here
-	ldr	r0, [r9, #GD_RELOC_OFF]		/* r0 = gd->reloc_off */
-	add	lr, lr, r0
-#if defined(CONFIG_CPU_V7M)
-	orr	lr, #1				/* As required by Thumb-only */
-#endif
-	ldr	r0, [r9, #GD_RELOCADDR]		/* r0 = gd->relocaddr */
-	b	relocate_code
-here:
-/*
- * now relocate vectors
- */
 
-	bl	relocate_vectors
-
-/* Set up final (full) environment */
-
-	bl	c_runtime_cpu_setup	/* we still call old routine here */
 #endif
 #if !defined(CONFIG_SPL_BUILD) || defined(CONFIG_SPL_FRAMEWORK)
 # ifdef CONFIG_SPL_BUILD
@@ -138,26 +121,7 @@ here:
 	movne	sp, r0
 	movne	r9, r0
 # endif
-	ldr	r0, =__bss_start	/* this is auto-relocated! */
 
-#ifdef CONFIG_USE_ARCH_MEMSET
-	ldr	r3, =__bss_end		/* this is auto-relocated! */
-	mov	r1, #0x00000000		/* prepare zero to clear BSS */
-
-	subs	r2, r3, r0		/* r2 = memset len */
-	bl	memset
-#else
-	ldr	r1, =__bss_end		/* this is auto-relocated! */
-	mov	r2, #0x00000000		/* prepare zero to clear BSS */
-
-clbss_l:cmp	r0, r1			/* while not at end of BSS */
-#if defined(CONFIG_CPU_V7M)
-	itt	lo
-#endif
-	strlo	r2, [r0]		/* clear 32-bit BSS word */
-	addlo	r0, r0, #4		/* move to next */
-	blo	clbss_l
-#endif
 
 #if ! defined(CONFIG_SPL_BUILD)
 	bl coloured_LED_init
