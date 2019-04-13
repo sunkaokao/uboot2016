@@ -95,6 +95,8 @@ typedef volatile unsigned char	vu_char;
 #define CONFIG_SYS_SUPPORT_64BIT_DATA
 #endif
 
+#define DEBUG
+
 #ifdef DEBUG
 #define _DEBUG	1
 #else
@@ -506,6 +508,8 @@ int board_late_init (void);
 int board_postclk_init (void); /* after clocks/timebase, before env/serial */
 int board_early_init_r (void);
 void board_poweroff (void);
+int nand_read_ll(unsigned char *buf, unsigned int start_addr, int len);
+
 
 #if defined(CONFIG_SYS_DRAM_TEST)
 int testdram(void);

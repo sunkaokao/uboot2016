@@ -138,8 +138,11 @@ copyex:
     mov r1, #0
     ldr r2, =__image_copy_end
     sub r2, r2, r0
-
     bl copy_code_to_sdram
+
+    ldr r0, = __bss_start
+    ldr r1, = __bss_end
+    bl clear_bss
 
     ldr pc, =run_in_sdram_f
 

@@ -181,4 +181,6 @@
 
 #define CONFIG_BOARD_EARLY_INIT_F
 
+#define CONFIG_CMD_NAND_TEST
+
 #endif /* __CONFIG_H */

@@ -38,6 +38,7 @@ obj-$(CONFIG_DATAFLASH_MMC_SELECT) += dataflash_mmc_mux.o
 obj-$(CONFIG_CMD_DATE) += date.o
 obj-$(CONFIG_CMD_DEMO) += demo.o
 obj-$(CONFIG_CMD_SOUND) += sound.o
+obj-$(CONFIG_CMD_NAND_TEST) += nand_test.o
 ifdef CONFIG_4xx
 obj-$(CONFIG_CMD_SETGETDCR) += dcr.o
 endif
