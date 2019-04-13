@@ -6,21 +6,21 @@
 #define LED_MASK(n)    (LED##n##_MASK)
 
 
-#define NFCONF        (*((volatile unsigned long *)0x4E000000))
-#define NFCONT        (*((volatile unsigned long *)0x4E000004))
-#define NFCMMD        (*((volatile unsigned char *)0x4E000008))
-#define NFADDR        (*((volatile unsigned char *)0x4E00000C))
-#define NFDATA        (*((volatile unsigned long *)0x4E000010))
-#define NFSTAT        (*((volatile unsigned long *)0x4E000020))
+#define NFCONF     (*(volatile unsigned long *)0x4E000000)
+#define NFCONT     (*(volatile unsigned long *)0x4E000004)
 
-#define TACLS_VAL     0
-#define TWRPH0_VAL    1
-#define TWRPH1_VAL    0
+#define NFCMMD     (*(volatile unsigned char *)0x4E000008)
+#define NFADDR     (*(volatile unsigned char *)0x4E00000C)
+#define NFDATA     (*(volatile unsigned char *)0x4E000010)
+#define NFSECCD    (*(volatile unsigned long *)0x4E00001C)
+#define NFSTAT     (*(volatile unsigned long *)0x4E000020)
 
-#define NAND_BLOCK_SIZE     2048
-#define NAND_BLOCK_MASK    (NAND_BLOCK_SIZE - 1)
+#define TACLS      0
+#define TWRPH0     1
+#define TWRPH1     0
 
-
+#define PAGE_SIZE   2048
+#define PAGE_ALIGN  (PAGE_SIZE - 1)
 
 
 void led_init_ll(void)
@@ -75,59 +75,47 @@ void led_off_ll(int n)
 
 /*----------- --- for nand flash ---------------*/
 
+static void nand_wait_idle(void)
+{
+    while(!(NFSTAT & 0x01));
+}
+
 static void nand_select(void)
 {
     int i = 0;
     
     NFCONT &= ~(1 << 1);
-    for(i = 0; i < 10; i++);
+    for(i=0; i<10; i++);    // 延时一小会儿
 }
 
 static void nand_deselect(void)
-{    
-    int i = 0;
-    
+{
     NFCONT |= (1 << 1);
-    for(i = 0; i < 10; i++); 
 }
 
-static void nand_write_cmd(unsigned char cmd)
+static void nand_write_cmd(int cmd)
 {
     NFCMMD = cmd;
 }
 
 static void nand_write_addr(unsigned int addr)
 {
-    int col = 0;
-    int page = 0;
     int i = 0;
-
-    page = addr / NAND_BLOCK_SIZE;
-    col &= NAND_BLOCK_MASK;
-
-    NFADDR = (col & 0xFF);
-    for(i = 0; i < 10; i++);
-    NFADDR = ((col >> 8) & 0x0F);
-    for(i = 0; i < 10; i++);
+    unsigned col = 0, raw = 0;
     
-    NFADDR = (page & 0xFF);
-    for(i = 0; i < 10; i++); 
-    NFADDR = ((page >> 8) & 0xFF);
-    for(i = 0; i < 10; i++);
-    NFADDR = ((page >> 16) & 0x01);
-    for(i = 0; i < 10; i++);
-
-
-}
-
-static void nand_wait_idle(void)
-{
-    int i = 0;
+    col = addr & PAGE_ALIGN;    // һҳ2Kb
+    raw = addr / PAGE_SIZE;
     
-    while(!(NFSTAT & 0x01))
-    {
-        for(i = 0; i < 10; i++);
-    }
+    NFADDR = col & 0xff;
+    for(i=0; i<10; i++);
+    NFADDR = (col >> 8) & 0x0f;
+    for(i=0; i<10; i++);
+    NFADDR = raw & 0xff;
+    for(i=0; i<10; i++);
+    NFADDR = (raw >> 8) & 0xff;
+    for(i=0; i<10; i++);
+    NFADDR = (raw >> 16) & 0x03;
+    for(i=0; i<10; i++);
 }
 
 static unsigned char nand_read_byte(void)
@@ -138,54 +126,46 @@ static unsigned char nand_read_byte(void)
 static void nand_reset(void)
 {
     nand_select();
-
-    nand_write_cmd(0xFF);
-
+    nand_write_cmd(0xff);
     nand_wait_idle();
-
     nand_deselect();
+}
+
+void nand_init_ll(void)
+{
+    NFCONF = (TACLS<<12)|(TWRPH0<<8)|(TWRPH1<<4);
+    NFCONT = (1<<4)|(1<<1)|(1<<0);
+    
+    nand_reset();
 }
 
 int nand_read_ll(unsigned char *buf, unsigned int start_addr, int len)
 {
-    int i = 0, j = 0;
-
-    if((start_addr & NAND_BLOCK_MASK) || (len & NAND_BLOCK_MASK))
-    {
-        return -1;
-    }
-
+    int col = start_addr % 2048;
+    int i = 0;
+   
     nand_select();
-
-    for(i = 0; i < (start_addr + len); )
+    
+    while(i < len)
     {
         nand_write_cmd(0x00);
-        
         nand_write_addr(start_addr);
-        
         nand_write_cmd(0x30);
-        
         nand_wait_idle();
-
-        for(j = 0; j < NAND_BLOCK_SIZE; i++, j++)
+        
+        for(; (i < len) && (col < 2048); col++)
         {
-            *buf = nand_read_byte();
-            buf++;
+            buf[i] = nand_read_byte();
+            i++;
+            start_addr++;
         }
+        
+        col = 0;
     }
-
+    
     nand_deselect();
 
     return 0;
-}
-
-
-void nand_init_ll(void)
-{
-    NFCONF = (TACLS_VAL << 12) | (TWRPH0_VAL << 8) | (TWRPH1_VAL << 4);
-    NFCONT = (1<<4)|(1<<1)|(1<<0);
-
-//    nand_reset();
 }
 
 int isBootFromNorFlash(void)
@@ -210,7 +190,7 @@ void copy_code_to_sdram(unsigned char *dest, unsigned char *src, int len)
 {
     int i = 0;
 
-    if(isBootFromNorFlash)
+    if(isBootFromNorFlash())
     {
         for(i = 0; i < len; i++)
         {

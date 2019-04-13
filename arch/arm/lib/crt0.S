@@ -82,6 +82,14 @@ ENTRY(_main)
 #else
 	bic	sp, sp, #7	/* 8-byte alignment for ABI compliance */
 #endif
+
+    /* open led1 */
+    bl led_init_ll
+    mov r0, #1
+    bl led_on_ll
+
+    bl nand_init_ll
+
 	mov	r0, sp
 	bl	board_init_f_alloc_reserve
 	mov	sp, r0
