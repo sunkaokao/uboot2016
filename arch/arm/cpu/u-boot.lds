@@ -172,7 +172,7 @@ SECTIONS
 
 	.rel_dyn_start :
 	{
-		*(.__rel_dyn_start)
+		KEEP(*(.__rel_dyn_start));
 	}
 
 	.rel.dyn : {
