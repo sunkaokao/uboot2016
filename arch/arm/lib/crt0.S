@@ -88,6 +88,9 @@ ENTRY(_main)
     mov r0, #2
     bl led_on_ll
 
+    mov r0, #3
+    bl led_on_ll
+
     /*bl nand_init_ll*/
 
 	mov	r0, sp
