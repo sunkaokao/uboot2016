@@ -85,7 +85,7 @@ ENTRY(_main)
 
     /* open led1 */
     bl led_init_ll
-    mov r0, #2
+    mov r0, #1
     bl led_on_ll
 
     mov r0, #3

@@ -377,10 +377,10 @@ static const struct amd_flash_info jedec_table[] = {
 		.CmdSet		= CFI_CMDSET_AMD_LEGACY,
 		.NumEraseRegions= 4,
 		.regions	= {
-			ERASEINFO(0x10000, 31),
-			ERASEINFO(0x08000, 1),
-			ERASEINFO(0x02000, 2),
 			ERASEINFO(0x04000, 1),
+   			ERASEINFO(0x02000, 2),
+    		ERASEINFO(0x08000, 1),
+			ERASEINFO(0x10000, 31),
 		}
 	},
 	{
