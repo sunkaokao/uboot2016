@@ -131,7 +131,7 @@ lowlevel_init:
 /* the literal pools origin */
 
 SMRDATA:
-    .word 0x02000000    /* BWSCON */
+    .word 0x02010000    /* BWSCON */
     .word 0x00000700    /* BANKCON0 */
     .word 0x00000700    /* BANKCON1 */
     .word 0x00000700    /* BANKCON2 */

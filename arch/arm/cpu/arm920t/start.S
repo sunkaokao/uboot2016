@@ -101,6 +101,12 @@ copyex:
     ldr r1, =S3C2440_MPLL_400MHZ
     str r1, [r0]
 
+    /* enable cache */
+	mrc p15, 0, r0, c1, c0, 0	@ read control reg
+	orr r0, r0, #(1<<12)
+	mcr	p15, 0, r0, c1, c0, 0   @ write it back
+
+
     /* set to synchronous bus mode */
     mrc p15,0,r0,c1,c0,0
     orr r0,r0,#0xc0000000
@@ -140,8 +146,8 @@ copyex:
     sub r2, r2, r0
     bl copy_code_to_sdram
 
-    ldr r0, = __bss_start
-    ldr r1, = __bss_end
+    ldr r0, =__bss_start
+    ldr r1, =__bss_end
     bl clear_bss
 
     ldr pc, =run_in_sdram_f

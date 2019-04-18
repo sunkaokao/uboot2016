@@ -16,6 +16,7 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+
 /*
  * CPU and board-specific Ethernet initializations.  Aliased function
  * signals caller to move on
