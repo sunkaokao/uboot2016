@@ -821,6 +821,13 @@ ifeq ($(CONFIG_DM_I2C_COMPAT)$(CONFIG_SANDBOX),y)
 	@echo "before sending patches to the mailing list."
 	@echo "===================================================="
 endif
+	@echo "======== modify by keho ========="
+	@if [ ! -f "./u-boot.bin" ];then \
+	echo "u-boot.bin not exist";\
+	else \
+	echo "copy u-boot.bin to ~/tfptboot/";\
+	cp u-boot.bin /home/keho/tftpboot;\
+	fi
 
 PHONY += dtbs
 dtbs: dts/dt.dtb

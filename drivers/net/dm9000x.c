@@ -562,6 +562,22 @@ static void dm9000_get_enetaddr(struct eth_device *dev)
 	for (i = 0; i < 3; i++)
 		dm9000_read_srom_word(i, dev->enetaddr + (2 * i));
 #endif
+
+    for (i = 0; i < 6; i++)
+    {
+        if(0 != dev->enetaddr[i])
+            break;
+    }
+
+    if(6 <= i)
+    {
+        const u8 my_ethaddr[6] = {0x1A, 0x2A, 0x3A, 0x4A, 0x5A, 0x6A};
+
+        for(i = 0; i < 6; i++)
+        {
+            dev->enetaddr[i] = my_ethaddr[i];
+        }
+    }
 }
 
 /*
