@@ -205,7 +205,7 @@
 
 #define MTDPARTS_DEFAULT    "mtdparts=jz2440-0:384k(u-boot),"  \
                          "128k(params),"        \
-                         "2m(kernel),"    \
+                         "4m(kernel),"    \
                          "-(rootfs)"
 
 
