@@ -96,6 +96,10 @@
 #define CONFIG_IPADDR		192.168.1.106
 #define CONFIG_SERVERIP		192.168.1.103
 
+#define CONFIG_BOOTARGS    "console=ttySAC0 root=/dev/mtdblock3"
+#define CONFIG_BOOTCOMMAND "nand read 30000000 kernel;bootm 30000000"
+
+
 
 #if defined(CONFIG_CMD_KGDB)
 #define CONFIG_KGDB_BAUDRATE	115200	/* speed to run kgdb serial port */
@@ -149,9 +153,17 @@
 #define CONFIG_SYS_FLASH_BANKS_LIST     { CONFIG_SYS_FLASH_BASE }
 #define CONFIG_SYS_MAX_FLASH_SECT	(35)
 
+#if 0
 #define CONFIG_ENV_ADDR			(CONFIG_SYS_FLASH_BASE + 0x070000)
 #define CONFIG_ENV_IS_IN_FLASH
 #define CONFIG_ENV_SIZE			0x10000
+#endif
+#define CONFIG_ENV_IS_IN_NAND
+#define CONFIG_ENV_SIZE       0x20000
+#define CONFIG_ENV_RANGE      CONFIG_ENV_SIZE
+#define CONFIG_ENV_OFFSET     0x60000
+
+
 /* allow to overwrite serial and ethaddr */
 #define CONFIG_ENV_OVERWRITE
 
@@ -186,6 +198,17 @@
 /*#define CONFIG_YAFFS2*/
 #define CONFIG_RBTREE
 #endif
+
+#define CONFIG_CMD_MTDPARTS
+#define CONFIG_MTD_DEVICE       /* needed for mtdparts commands */
+#define MTDIDS_DEFAULT      "nand0=jz2440-0"
+
+#define MTDPARTS_DEFAULT    "mtdparts=jz2440-0:384k(u-boot),"  \
+                         "128k(params),"        \
+                         "2m(kernel),"    \
+                         "-(rootfs)"
+
+
 
 /* additions for new relocation code, must be added to all boards */
 #define CONFIG_SYS_SDRAM_BASE	PHYS_SDRAM_1
