@@ -93,8 +93,8 @@
 #define CONFIG_RESET_TO_RETRY
 
 #define CONFIG_NETMASK		255.255.255.0
-#define CONFIG_IPADDR		192.168.1.106
-#define CONFIG_SERVERIP		192.168.1.103
+#define CONFIG_IPADDR		192.168.1.108
+#define CONFIG_SERVERIP		192.168.1.100
 
 #define CONFIG_BOOTARGS    "console=ttySAC0 root=/dev/mtdblock3"
 #define CONFIG_BOOTCOMMAND "nand read 30000000 kernel;bootm 30000000"
@@ -203,7 +203,7 @@
 #define CONFIG_MTD_DEVICE       /* needed for mtdparts commands */
 #define MTDIDS_DEFAULT      "nand0=jz2440-0"
 
-#define MTDPARTS_DEFAULT    "mtdparts=jz2440-0:384k(u-boot),"  \
+#define MTDPARTS_DEFAULT    "mtdparts=jz2440-0:512k(u-boot),"  \
                          "128k(params),"        \
                          "4m(kernel),"    \
                          "-(rootfs)"
@@ -218,5 +218,7 @@
 #define CONFIG_BOARD_EARLY_INIT_F
 
 #define CONFIG_CMD_NAND_TEST
+
+#define CONFIG_MACH_TYPE    362
 
 #endif /* __CONFIG_H */
